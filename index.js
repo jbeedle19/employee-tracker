@@ -16,3 +16,8 @@
 // Update:
 //      Employee's role
 //          prompted to select an employee to update and their role and entered info is updated in the DB
+
+// Requirements
+const inquirer = require('inquirer');
+const mysql = require('mysql2');
+const cTable = require('console.table');
