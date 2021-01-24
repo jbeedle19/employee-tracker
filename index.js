@@ -79,28 +79,93 @@ const promptInitialChoices = () => {
                     }
                 },
                 {
-                    type: 'choice',
+                    type: 'list',
                     name: 'roleDepartment',
                     message: 'Which department does this role belong to?',
-                    
-                },
+                    // show all available departments to choose from
+                    choices: ['Here is where', 'the existing departments', 'should appear', 'to choose from']
+                }
             ])
+            // Role is added to DB
             .then((data) => {
                 // Add to DB 
                 promptInitialChoices();
             });
-            // Role is added to DB
         } else if (initialChoices === 'Add an employee') {
-            console.log('Choice Selected!');
-            promptInitialChoices();
-            // Prompted to enter the employee's first name, last name, role, and manager. 
+            // Prompted to enter the employee's first name, last name, role, and manager.
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'empFirstName',
+                    message: 'What is the first name of the employee?',
+                    default: 'Karen',
+                    validate: empFirstNameInput => {
+                        if (empFirstNameInput) {
+                            return true;
+                        } else {
+                            console.log("Please enter the employee's first name!");
+                            return false;
+                        }
+                    }
+                },
+                {
+                    type: 'input',
+                    name: 'empLastName',
+                    message: 'What is the last name of the employee?',
+                    default: 'Filippelli',
+                    validate: empLastNameInput => {
+                        if (empLastNameInput) {
+                            return true;
+                        } else {
+                            console.log("Please enter the employee's last name!");
+                            return false;
+                        }
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'empRole',
+                    message: "What is the employee's role?",
+                    // Show all the available roles to choose from
+                    choices: ['Here is where', 'the existing roles', 'should appear', 'to choose from']
+                },
+                {
+                    type: 'list',
+                    name: 'empManager',
+                    message: "Who is the employee's manager?",
+                    // Show all the available employees to choose from
+                    choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
+                }
+            ])
             // Employee is added to DB
+            .then((data) => {
+                // Add to DB 
+                promptInitialChoices();
+            });
         } else if (initialChoices === 'Update an employee') {
-            console.log('Choice Selected!');
-            promptInitialChoices();
             // Prompted to select an employee (list all avail) to update
             // Prompted to select a (new) role (list all avail). 
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'empChoices',
+                    message: 'Which employee would you like to update?',
+                    // show all available employees to choose from
+                    choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
+                },
+                {
+                    type: 'list',
+                    name: 'roleChoices',
+                    message: "What is the employee's new role?",
+                    // show all available roles to choose from
+                    choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
+                }
+            ])
             // Their new role is updated in the DB
+            .then((data) => {
+                // Add to DB
+                promptInitialChoices();
+            });
         } else {
             console.log('Bye!');
             return;
