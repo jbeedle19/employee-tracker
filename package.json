@@ -4,7 +4,8 @@
   "description": "A command-line application that helps business owners view and manage the departments, roles, and employees in their company so that they can better organize and plan their business.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
