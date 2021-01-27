@@ -2,6 +2,28 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const cTable = require('console.table');
+const connection = require('./config/connection');
+
+connection.connect(err => {
+    if (err) throw err;
+    console.log('Connected as id ' + connection.threadId + '\n');
+    testFunction();
+});
+
+testFunction = () => {
+    console.log('Hola!');
+    console.log('Welcome to Employee Tracker!');
+    promptInitialChoices();
+    connection.end();
+    /* const query = connection.query(
+        "SELECT id, CONCAT(first_name,' ',last_name) AS name, role_id AS role, manager_id AS manager FROM employee;",
+        function(err, res) {
+            if (err) throw err;
+            console.log(res);
+                connection.end();
+        }
+    ) */
+};
 
 const promptInitialChoices = () => {
     inquirer.prompt({
@@ -174,9 +196,9 @@ const promptInitialChoices = () => {
 };
 
 // Function to initialize app
-function init() {
+/* function init() {
     console.log('Welcome to Employee Tracker!');
     promptInitialChoices();
 }
 
-init();
+init(); */
