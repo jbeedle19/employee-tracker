@@ -1,30 +1,33 @@
 // Requirements
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
 const cTable = require('console.table');
 const connection = require('./config/connection');
+const db = require('./db/queries');
 
+// Connect to DB and run program
 connection.connect(err => {
     if (err) throw err;
     console.log('Connected as id ' + connection.threadId + '\n');
-    testFunction();
+    promptInitialChoices();
 });
 
-testFunction = () => {
+// Salvage sql query from this for view all employees
+/* testFunction = () => {
     console.log('Hola!');
     console.log('Welcome to Employee Tracker!');
-    promptInitialChoices();
-    connection.end();
-    /* const query = connection.query(
-        "SELECT id, CONCAT(first_name,' ',last_name) AS name, role_id AS role, manager_id AS manager FROM employee;",
+    //promptInitialChoices();
+    //connection.end();
+    const employeeQuery = connection.query(
+        `SELECT id, CONCAT(first_name,' ',last_name) AS name, role_id AS role, manager_id AS manager FROM employee;`,
         function(err, res) {
             if (err) throw err;
-            console.log(res);
+            console.table(res);
                 connection.end();
         }
-    ) */
-};
+    )
+}; */
 
+// Prompt user
 const promptInitialChoices = () => {
     inquirer.prompt({
         type: 'list',
@@ -36,9 +39,8 @@ const promptInitialChoices = () => {
     })
     .then(({ initialChoices }) => {
         if (initialChoices === 'View ALL departments') {
-            console.log('Choice Selected!');
-            promptInitialChoices();
             // Show formatted table with department names and ids
+            viewAllDep();
         } else if (initialChoices === 'View ALL roles') {
             console.log('Choice Selected!');
             promptInitialChoices();
@@ -67,11 +69,18 @@ const promptInitialChoices = () => {
             })
             .then((data) => {
                 // Add to DB 
-                promptInitialChoices();
+                addADepartment(data);
             });
         } else if (initialChoices === 'Add a role') {
-            // prompted to enter the name, salary, and department for the role.
-            inquirer.prompt([
+            db.getAllDep().then(res => {
+                const depChoices = [];
+                for (let i = 0; i < res.length; i++) {
+                    depChoices.push({
+                        name: res[i].name,
+                        value: res[i].id
+                    })
+                }
+                inquirer.prompt([
                 {
                     type: 'input',
                     name: 'roleName',
@@ -105,14 +114,29 @@ const promptInitialChoices = () => {
                     name: 'roleDepartment',
                     message: 'Which department does this role belong to?',
                     // show all available departments to choose from
-                    choices: ['Here is where', 'the existing departments', 'should appear', 'to choose from']
+                    choices: depChoices
                 }
             ])
             // Role is added to DB
             .then((data) => {
-                // Add to DB 
-                promptInitialChoices();
+                db.addRole(data.roleName, data.salary, data.roleDepartment)
+                .then(res => {
+                    console.log('Role Added!');
+                    promptInitialChoices();
+                })
+                .catch((err) => {
+                    if (err) throw err;
+                });
             });
+            })
+            /* db.getAllDep().then(res => {
+                const depChoices = res.map(depRow => {
+                return {
+                    name: depRow.name,
+                    value: depRow.id
+                }});
+            }); */
+            // prompted to enter the name, salary, and department for the role.
         } else if (initialChoices === 'Add an employee') {
             // Prompted to enter the employee's first name, last name, role, and manager.
             inquirer.prompt([
@@ -190,15 +214,42 @@ const promptInitialChoices = () => {
             });
         } else {
             console.log('Bye!');
+            connection.end();
             return;
         }
     });
 };
 
-// Function to initialize app
-/* function init() {
-    console.log('Welcome to Employee Tracker!');
-    promptInitialChoices();
-}
+// DB query functions
+viewAllDep = () => {
+    db.getAllDep()
+        .then(res => {
+            console.table(res);
+            promptInitialChoices();
+        })
+        .catch(err => {
+            if (err) throw err;
+        });
+};
 
-init(); */
+viewAllRoles = () => {
+    db.getAllRoles()
+        .then(res => {
+            console.table(res);
+            promptInitialChoices();
+        })
+        .catch(err => {
+            if (err) throw err;
+        });
+};
+
+addADepartment = ({departmentName}) => {
+    db.addDep(departmentName)
+    .then(res => {
+        console.log('Department added!');
+        promptInitialChoices();
+    })
+    .catch((err) => {
+        if (err) throw err;
+    });
+};
