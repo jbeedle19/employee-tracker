@@ -11,22 +11,6 @@ connection.connect(err => {
     promptInitialChoices();
 });
 
-// Salvage sql query from this for view all employees
-/* testFunction = () => {
-    console.log('Hola!');
-    console.log('Welcome to Employee Tracker!');
-    //promptInitialChoices();
-    //connection.end();
-    const employeeQuery = connection.query(
-        `SELECT id, CONCAT(first_name,' ',last_name) AS name, role_id AS role, manager_id AS manager FROM employee;`,
-        function(err, res) {
-            if (err) throw err;
-            console.table(res);
-                connection.end();
-        }
-    )
-}; */
-
 // Prompt user
 const promptInitialChoices = () => {
     inquirer.prompt({
@@ -39,20 +23,13 @@ const promptInitialChoices = () => {
     })
     .then(({ initialChoices }) => {
         if (initialChoices === 'View ALL departments') {
-            // Show formatted table with department names and ids
             viewAllDep();
         } else if (initialChoices === 'View ALL roles') {
-            console.log('Choice Selected!');
-            promptInitialChoices();
-            // Show formatted table with role id, job title, 
-            // the department that role belongs to, and the salary for that role
+            viewAllRoles();
         } else if (initialChoices === 'View ALL employees') {
-            console.log('Choice Selected!');
-            promptInitialChoices();
             // Show formatted table with employee ids, first names, 
             // last names, job titles, departments, salaries, and manager of that employee
         } else if (initialChoices === 'Add a department') {
-            // prompt department name
             inquirer.prompt({
                 type: 'input',
                 name: 'departmentName',
@@ -68,7 +45,6 @@ const promptInitialChoices = () => {
                 }
             })
             .then((data) => {
-                // Add to DB 
                 addADepartment(data);
             });
         } else if (initialChoices === 'Add a role') {
@@ -113,33 +89,16 @@ const promptInitialChoices = () => {
                     type: 'list',
                     name: 'roleDepartment',
                     message: 'Which department does this role belong to?',
-                    // show all available departments to choose from
                     choices: depChoices
                 }
-            ])
-            // Role is added to DB
-            .then((data) => {
-                db.addRole(data.roleName, data.salary, data.roleDepartment)
-                .then(res => {
-                    console.log('Role Added!');
-                    promptInitialChoices();
-                })
-                .catch((err) => {
-                    if (err) throw err;
+                ])
+                .then((data) => {
+                    addARole(data);
                 });
-            });
             })
-            /* db.getAllDep().then(res => {
-                const depChoices = res.map(depRow => {
-                return {
-                    name: depRow.name,
-                    value: depRow.id
-                }});
-            }); */
-            // prompted to enter the name, salary, and department for the role.
         } else if (initialChoices === 'Add an employee') {
-            // Prompted to enter the employee's first name, last name, role, and manager.
-            inquirer.prompt([
+            db.getAllRole().then(res => {
+                inquirer.prompt([
                 {
                     type: 'input',
                     name: 'empFirstName',
@@ -183,11 +142,10 @@ const promptInitialChoices = () => {
                     choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
                 }
             ])
-            // Employee is added to DB
             .then((data) => {
-                // Add to DB 
-                promptInitialChoices();
+                addAnEmployee(data);
             });
+            })
         } else if (initialChoices === 'Update an employee') {
             // Prompted to select an employee (list all avail) to update
             // Prompted to select a (new) role (list all avail). 
@@ -207,13 +165,11 @@ const promptInitialChoices = () => {
                     choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
                 }
             ])
-            // Their new role is updated in the DB
             .then((data) => {
-                // Add to DB
-                promptInitialChoices();
+                updateAnEmployee(data);
             });
         } else {
-            console.log('Bye!');
+            console.log('Goodbye!');
             connection.end();
             return;
         }
@@ -221,6 +177,7 @@ const promptInitialChoices = () => {
 };
 
 // DB query functions
+// Function to view all departments in a table
 viewAllDep = () => {
     db.getAllDep()
         .then(res => {
@@ -232,8 +189,9 @@ viewAllDep = () => {
         });
 };
 
+// Function to view all roles in a table
 viewAllRoles = () => {
-    db.getAllRoles()
+    db.getAllRole()
         .then(res => {
             console.table(res);
             promptInitialChoices();
@@ -243,13 +201,63 @@ viewAllRoles = () => {
         });
 };
 
+// Function to view all employees in a table
+// WORKING ON THIS
+viewAllEmployees = () => {
+    db.getAllEmployee()
+        .then(res => {
+            console.table(res);
+            promptInitialChoices();
+        })
+        .catch(err => {
+            if (err) throw err;
+        });
+};
+
+// Function to add a department to the DB
 addADepartment = ({departmentName}) => {
     db.addDep(departmentName)
-    .then(res => {
-        console.log('Department added!');
-        promptInitialChoices();
-    })
-    .catch((err) => {
-        if (err) throw err;
-    });
+        .then(res => {
+            console.log('Department added!');
+            promptInitialChoices();
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
+
+// Function to add a role to the DB
+addARole = ({roleName, salary, roleDepartment}) => {
+    db.addRole(roleName, salary, roleDepartment)
+        .then(res => {
+            console.log('Role added!');
+            promptInitialChoices();
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
+
+// Function to add an employee to the DB
+addAnEmployee = ({empFirstName, empLastName, empRole, empManager}) => {
+    db.addEmp(empFirstName, empLastName, empRole, empManager)
+        .then(res => {
+            console.log('Employee added!');
+            promptInitialChoices();
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
+
+// Function to update an employee's role in the DB
+updateAnEmployee = ({empChoices, roleChoices}) => {
+    db.updateEmp(empChoices, roleChoices)
+        .then(res => {
+            console.log('Employee Updated!');
+            promptInitialChoices();
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
 };
