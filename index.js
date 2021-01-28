@@ -14,6 +14,9 @@ let managerChoices = [];
 connection.connect(err => {
     if (err) throw err;
     console.log('Connected as id ' + connection.threadId + '\n');
+    console.log(`++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                WELCOME TO EMPLOYEE TRACKER!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++`);
     promptInitialChoices();
 });
 
@@ -174,7 +177,9 @@ const promptInitialChoices = () => {
 viewAllDep = () => {
     db.getAllDep()
         .then(res => {
+            console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
             console.table(res);
+            console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
             promptInitialChoices();
         })
         .catch(err => {
@@ -186,7 +191,9 @@ viewAllDep = () => {
 viewAllRoles = () => {
     db.getAllRole()
         .then(res => {
+            console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
             console.table(res);
+            console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
             promptInitialChoices();
         })
         .catch(err => {
@@ -198,7 +205,9 @@ viewAllRoles = () => {
 viewAllEmployees = () => {
     db.getAllEmployee()
         .then(res => {
+            console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
             console.table(res);
+            console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
             promptInitialChoices();
         })
         .catch(err => {
@@ -210,7 +219,9 @@ viewAllEmployees = () => {
 addADepartment = ({departmentName}) => {
     db.addDep(departmentName)
         .then(res => {
-            console.log('Department added!');
+            console.log(`++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    Department Added!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++`);
             promptInitialChoices();
         })
         .catch((err) => {
@@ -222,7 +233,9 @@ addADepartment = ({departmentName}) => {
 addARole = ({roleName, salary, roleDepartment}) => {
     db.addRole(roleName, salary, roleDepartment)
         .then(res => {
-            console.log('Role added!');
+            console.log(`++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    Role Added!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++`);
             promptInitialChoices();
         })
         .catch((err) => {
@@ -234,7 +247,9 @@ addARole = ({roleName, salary, roleDepartment}) => {
 addAnEmployee = ({empFirstName, empLastName, empRole, empManager}) => {
     db.addEmp(empFirstName, empLastName, empRole, empManager)
         .then(res => {
-            console.log('Employee added!');
+            console.log(`++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    Employee Added!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++`);
             promptInitialChoices();
         })
         .catch((err) => {
@@ -246,7 +261,9 @@ addAnEmployee = ({empFirstName, empLastName, empRole, empManager}) => {
 updateAnEmployee = ({roleChoices, empChoices}) => {
     db.updateEmp(roleChoices, empChoices)
         .then(res => {
-            console.log('Employee Updated!');
+            console.log(`++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    Employee Updated!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++`);
             promptInitialChoices();
         })
         .catch((err) => {
