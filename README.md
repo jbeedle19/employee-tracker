@@ -11,15 +11,15 @@ Install dependencies with
 npm install
 ```
 ## Usage
-In the terminal, navigate to the directory and run
+First, update the schema and seeds files with your own employee information. Then in the terminal, navigate to the directory and run
 ```JavaScript
 npm start
 ```
 Navigate through the choices displayed in order to view all departments, roles, and employees. Add a department, role, or employee. Or to update an employee role.
 
-![walkthrough](.placeholder/walkthrough.gif)
+![walkthrough](./assets/walkthrough.gif)
 
-![Video-Link](google docs video link here)
+[Video Link](https://drive.google.com/file/d/1RVDgXBGGxwLZGwtAbO1c4GHwGVnL9QSY/view)
 ## Built With
 * Node.js
 * Inquirer
