@@ -3,10 +3,11 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const connection = require('./config/connection');
 const db = require('./db/queries');
-let depChoices;
-let roleChoices;
-let empChoices;
-let managerChoices;
+// Arrays that will house current choices when you need to list choices out in prompt 
+let depChoices = [];
+let roleChoices = [];
+let empChoices = [];
+let managerChoices = [];
 
 // Connect to DB and run program
 connection.connect(err => {
@@ -17,6 +18,8 @@ connection.connect(err => {
 
 // Prompt user
 const promptInitialChoices = () => {
+    // put functions here to update array so that each time the main menu is returned it updates
+    updateDeptArray();
     inquirer.prompt({
         type: 'list',
         name: 'initialChoices',
@@ -31,8 +34,6 @@ const promptInitialChoices = () => {
         } else if (initialChoices === 'View ALL roles') {
             viewAllRoles();
         } else if (initialChoices === 'View ALL employees') {
-            // Show formatted table with employee ids, first names, 
-            // last names, job titles, departments, salaries, and manager of that employee
             viewAllEmployees();
         } else if (initialChoices === 'Add a department') {
             inquirer.prompt({
@@ -53,15 +54,7 @@ const promptInitialChoices = () => {
                 addADepartment(data);
             });
         } else if (initialChoices === 'Add a role') {
-            db.getAllDep().then(res => {
-                const depChoices = [];
-                for (let i = 0; i < res.length; i++) {
-                    depChoices.push({
-                        name: res[i].name,
-                        value: res[i].id
-                    })
-                }
-                inquirer.prompt([
+            inquirer.prompt([
                 {
                     type: 'input',
                     name: 'roleName',
@@ -96,11 +89,11 @@ const promptInitialChoices = () => {
                     message: 'Which department does this role belong to?',
                     choices: depChoices
                 }
-                ])
-                .then((data) => {
-                    addARole(data);
-                });
-            })
+            ])
+            .then((data) => {
+                console.log(data);
+                addARole(data);
+            });
         } else if (initialChoices === 'Add an employee') {
             db.getAllRole().then(res => {
                 inquirer.prompt([
@@ -207,7 +200,6 @@ viewAllRoles = () => {
 };
 
 // Function to view all employees in a table
-// WORKING ON THIS
 viewAllEmployees = () => {
     db.getAllEmployee()
         .then(res => {
@@ -266,3 +258,29 @@ updateAnEmployee = ({empChoices, roleChoices}) => {
             if (err) throw err;
         });
 };
+
+updateDeptArray = () => {
+    db.getDepChoices()
+        .then(res => {
+            depChoices = [];
+            for (let i = 0; i < res.length; i++) {
+                depChoices.push({
+                    name: res[i].name,
+                    value: res[i].id
+                })
+            }
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
+
+//old set up
+/* db.getAllDep().then(res => {
+    const depChoices = [];
+    for (let i = 0; i < res.length; i++) {
+        depChoices.push({
+            name: res[i].name,
+            value: res[i].id
+        })
+    } */
