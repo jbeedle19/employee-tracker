@@ -3,6 +3,10 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const connection = require('./config/connection');
 const db = require('./db/queries');
+let depChoices;
+let roleChoices;
+let empChoices;
+let managerChoices;
 
 // Connect to DB and run program
 connection.connect(err => {
@@ -29,6 +33,7 @@ const promptInitialChoices = () => {
         } else if (initialChoices === 'View ALL employees') {
             // Show formatted table with employee ids, first names, 
             // last names, job titles, departments, salaries, and manager of that employee
+            viewAllEmployees();
         } else if (initialChoices === 'Add a department') {
             inquirer.prompt({
                 type: 'input',
