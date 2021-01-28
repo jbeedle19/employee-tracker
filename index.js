@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const connection = require('./config/connection');
 const db = require('./db/queries');
+
 // Arrays that will house current choices when you need to list choices out in prompt 
 let depChoices = [];
 let roleChoices = [];
@@ -16,10 +17,12 @@ connection.connect(err => {
     promptInitialChoices();
 });
 
-// Prompt user
+// Prompt user and refresh arrays everytime menu returns
 const promptInitialChoices = () => {
-    // put functions here to update array so that each time the main menu is returned it updates
     updateDeptArray();
+    updateRoleArray();
+    updateEmployeeArray();
+    updateManagerArray();
     inquirer.prompt({
         type: 'list',
         name: 'initialChoices',
@@ -59,7 +62,7 @@ const promptInitialChoices = () => {
                     type: 'input',
                     name: 'roleName',
                     message: 'What is the name of the role?',
-                    default: 'Assistant to the Regional Manager',
+                    default: 'Asst to the Rgnl Manager',
                     validate: roleNameInput => {
                         if (roleNameInput) {
                             return true;
@@ -91,12 +94,10 @@ const promptInitialChoices = () => {
                 }
             ])
             .then((data) => {
-                console.log(data);
                 addARole(data);
             });
         } else if (initialChoices === 'Add an employee') {
-            db.getAllRole().then(res => {
-                inquirer.prompt([
+            inquirer.prompt([
                 {
                     type: 'input',
                     name: 'empFirstName',
@@ -129,21 +130,18 @@ const promptInitialChoices = () => {
                     type: 'list',
                     name: 'empRole',
                     message: "What is the employee's role?",
-                    // Show all the available roles to choose from
-                    choices: ['Here is where', 'the existing roles', 'should appear', 'to choose from']
+                    choices: roleChoices
                 },
                 {
                     type: 'list',
                     name: 'empManager',
                     message: "Who is the employee's manager?",
-                    // Show all the available employees to choose from
-                    choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
+                    choices: managerChoices
                 }
             ])
             .then((data) => {
                 addAnEmployee(data);
             });
-            })
         } else if (initialChoices === 'Update an employee') {
             // Prompted to select an employee (list all avail) to update
             // Prompted to select a (new) role (list all avail). 
@@ -152,15 +150,13 @@ const promptInitialChoices = () => {
                     type: 'list',
                     name: 'empChoices',
                     message: 'Which employee would you like to update?',
-                    // show all available employees to choose from
-                    choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
+                    choices: empChoices
                 },
                 {
                     type: 'list',
                     name: 'roleChoices',
                     message: "What is the employee's new role?",
-                    // show all available roles to choose from
-                    choices: ['Here is where', 'the existing employees', 'should appear', 'to choose from']
+                    choices: roleChoices
                 }
             ])
             .then((data) => {
@@ -259,6 +255,8 @@ updateAnEmployee = ({empChoices, roleChoices}) => {
         });
 };
 
+// Functions for updating the arrays
+// Update Department array
 updateDeptArray = () => {
     db.getDepChoices()
         .then(res => {
@@ -275,12 +273,53 @@ updateDeptArray = () => {
         });
 };
 
-//old set up
-/* db.getAllDep().then(res => {
-    const depChoices = [];
-    for (let i = 0; i < res.length; i++) {
-        depChoices.push({
-            name: res[i].name,
-            value: res[i].id
+// Update Role array
+updateRoleArray = () => {
+    db.getRoleChoices()
+        .then(res => {
+            roleChoices = [];
+            for (let i = 0; i < res.length; i++) {
+                roleChoices.push({
+                    name: res[i].title,
+                    value: res[i].id
+                })
+            }
         })
-    } */
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
+
+// Update Employee array
+updateEmployeeArray = () => {
+    db.getEmpChoices()
+        .then(res => {
+            empChoices = [];
+            for (let i = 0; i < res.length; i++) {
+                roleChoices.push({
+                    name: res[i].name,
+                    value: res[i].id
+                })
+            }
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
+
+// Update Manager array
+updateManagerArray = () => {
+    db.getManagerChoices()
+        .then(res => {
+            managerChoices = [];
+            for (let i = 0; i < res.length; i++) {
+                roleChoices.push({
+                    name: res[i].name,
+                    value: res[i].id
+                })
+            }
+        })
+        .catch((err) => {
+            if (err) throw err;
+        });
+};
