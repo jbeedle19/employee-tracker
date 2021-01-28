@@ -143,8 +143,6 @@ const promptInitialChoices = () => {
                 addAnEmployee(data);
             });
         } else if (initialChoices === 'Update an employee') {
-            // Prompted to select an employee (list all avail) to update
-            // Prompted to select a (new) role (list all avail). 
             inquirer.prompt([
                 {
                     type: 'list',
@@ -160,6 +158,7 @@ const promptInitialChoices = () => {
                 }
             ])
             .then((data) => {
+                console.log(data);
                 updateAnEmployee(data);
             });
         } else {
@@ -244,8 +243,8 @@ addAnEmployee = ({empFirstName, empLastName, empRole, empManager}) => {
 };
 
 // Function to update an employee's role in the DB
-updateAnEmployee = ({empChoices, roleChoices}) => {
-    db.updateEmp(empChoices, roleChoices)
+updateAnEmployee = ({roleChoices, empChoices}) => {
+    db.updateEmp(roleChoices, empChoices)
         .then(res => {
             console.log('Employee Updated!');
             promptInitialChoices();
@@ -296,7 +295,7 @@ updateEmployeeArray = () => {
         .then(res => {
             empChoices = [];
             for (let i = 0; i < res.length; i++) {
-                roleChoices.push({
+                empChoices.push({
                     name: res[i].name,
                     value: res[i].id
                 })
@@ -313,7 +312,7 @@ updateManagerArray = () => {
         .then(res => {
             managerChoices = [];
             for (let i = 0; i < res.length; i++) {
-                roleChoices.push({
+                managerChoices.push({
                     name: res[i].name,
                     value: res[i].id
                 })

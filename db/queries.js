@@ -8,10 +8,10 @@ module.exports = {
     addDep: (dep) => connection.query(`INSERT INTO department (name) VALUES (?)`, [dep]),
     addRole: (role, salary, id) => connection.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [role, salary, id]),
     addEmp: (firstName, lastName, role, manager) => connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [firstName, lastName, role, manager]),
-    updateEmp: (role, id) => connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [role, id]),
+    updateEmp: (role, id) => connection.query(`UPDATE employee SET employee.role_id = ? WHERE employee.id = ?`, [role, id]),
     // Functions for updating choice arrays
     getDepChoices: () => connection.query(`SELECT * FROM department;`),
-    getRoleChoices: () => connection.query(`SELECT title FROM role;`),
-    getEmpChoices: () => connection.query(`SELECT CONCAT(first_name,' ',last_name) AS name FROM employee;`),
-    getManagerChoices: () => connection.query(`SELECT CONCAT(first_name,' ',last_name) AS name FROM employee;`)
+    getRoleChoices: () => connection.query(`SELECT id, title FROM role;`),
+    getEmpChoices: () => connection.query(`SELECT id, CONCAT(first_name,' ',last_name) AS name FROM employee;`),
+    getManagerChoices: () => connection.query(`SELECT id, CONCAT(first_name,' ',last_name) AS name FROM employee;`)
 }
